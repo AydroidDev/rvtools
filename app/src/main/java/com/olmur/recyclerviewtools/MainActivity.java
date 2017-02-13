@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements IOnSwipeLeftActio
         ItemTouchHelper.Callback itemTouchCallBack = new RecyclerTouchGestureHelper.Builder()
                 .withSwipeRightListener(this)
                 .withSwipeLeftListener(this)
-                .withMoveListener(this)
+                .withMoveListener(this, ItemTouchHelper.DOWN | ItemTouchHelper.UP)
                 // Provide default background drawer
                 // or use different drawer per view holder
                 .withBackgroundDrawer(new BackgroundDrawer1())

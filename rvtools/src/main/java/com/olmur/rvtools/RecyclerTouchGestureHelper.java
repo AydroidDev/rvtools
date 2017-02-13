@@ -35,9 +35,10 @@ public class RecyclerTouchGestureHelper extends ItemTouchHelper.Callback {
             return this;
         }
 
-        public Builder withMoveListener(IOnMoveAction listener) {
+        public Builder withMoveListener(IOnMoveAction listener, int moveFlags) {
             mGestureHelper.setMove(true);
             mGestureHelper.setMoveAction(listener);
+            mGestureHelper.setMoveFlags(moveFlags);
             return this;
         }
 
@@ -54,6 +55,8 @@ public class RecyclerTouchGestureHelper extends ItemTouchHelper.Callback {
     private boolean mSwipeLeft;
     private boolean mSwipeRight;
     private boolean mMove;
+
+    private int mMoveFlags;
 
     private IOnSwipeLeftAction mSwipeLeftAction;
     private IOnSwipeRightAction mSwipeRightAction;
@@ -76,6 +79,10 @@ public class RecyclerTouchGestureHelper extends ItemTouchHelper.Callback {
 
     private void setMove(boolean move) {
         mMove = move;
+    }
+
+    private void setMoveFlags(int moveFlags) {
+        mMoveFlags = moveFlags;
     }
 
     private void setSwipeLeftAction(IOnSwipeLeftAction swipeLeftAction) {
@@ -108,7 +115,7 @@ public class RecyclerTouchGestureHelper extends ItemTouchHelper.Callback {
         }
         int dragFlags = 0;
         if (mMove) {
-            dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+            dragFlags = mMoveFlags;
         }
 
         return makeMovementFlags(dragFlags, swipeFlags);
