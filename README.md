@@ -3,6 +3,7 @@
 <p>Define <b>swipe</b> and <b>move</b> gestures, change items <b>appearance</b> on select/deselect, <b>reorder</b> items, 
 define <b>background drawer</b> for whole list and for individual items, define <b>empty view</b>.</p>
 
+![alt tag](https://github.com/olmur/rvtools/blob/master/snapshot.png)
 
 
 Extend <b>BaseRecyclerAdapter</b> class
