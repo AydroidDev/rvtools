@@ -7,7 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
 import com.olmur.rvtools.EmptyRecyclerView;
-import com.olmur.rvtools.RecyclerTouchGestureHelper;
+import com.olmur.rvtools.ItemTouchHelperCallback;
 import com.olmur.rvtools.property.IOnMoveAction;
 import com.olmur.rvtools.property.IOnSwipeLeftAction;
 import com.olmur.rvtools.property.IOnSwipeRightAction;
@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity implements IOnSwipeLeftActio
 
     private MainAdapter mAdapter;
 
-    private static final MainEntity[] sData = new MainEntity[] {
+    private static final MainEntity[] sData = new MainEntity[]{
             new MainEntity("Swipe gestures"),
             new MainEntity("Control items background views"),
             new MainEntity("Provide default background for all items"),
@@ -38,18 +38,14 @@ public class MainActivity extends AppCompatActivity implements IOnSwipeLeftActio
         // Define empty view and recycler view will handle its rendering
         // recyclerView.setEmptyView(YOUR_EMPTY_VIEW);
 
-        ItemTouchHelper.Callback itemTouchCallBack = new RecyclerTouchGestureHelper.Builder()
-                .withSwipeRightListener(this)
-                .withSwipeLeftListener(this)
-                .withMoveListener(this, ItemTouchHelper.DOWN | ItemTouchHelper.UP)
-                // Provide default background drawer
+        new ItemTouchHelperCallback.Builder()
+                .withSwipeRightAction(this)
+                .withSwipeLeftAction(this)
+                .withMoveAction(this, mAdapter, ItemTouchHelper.DOWN | ItemTouchHelper.UP)
+                // Provide default swipe contextual menu drawer
                 // or use different drawer per view holder
-                .withBackgroundDrawer(new BackgroundDrawer1())
-                .build();
-
-        // Create helper and attach it recycler view
-        final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemTouchCallBack);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+                .withSwipeContextMenuDrawer(new SwipeMenuDrawer1())
+                .attachToRecyclerView(recyclerView);
     }
 
     @Override
@@ -59,13 +55,13 @@ public class MainActivity extends AppCompatActivity implements IOnSwipeLeftActio
     }
 
     @Override
-    public void onSwipeLeftAction(int position) {
+    public void onSwipeLeft(int position) {
         // Do something on swipe
         mAdapter.doSomething(position);
     }
 
     @Override
-    public void onSwipeRightAction(int position) {
+    public void onSwipeRight(int position) {
         // Do something on swipe
         mAdapter.doSomething(position);
     }

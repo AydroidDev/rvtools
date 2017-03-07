@@ -3,7 +3,7 @@ package com.olmur.recyclerviewtools;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,27 +11,27 @@ import android.widget.TextView;
 
 import com.olmur.rvtools.BaseRecyclerAdapter;
 import com.olmur.rvtools.GestureUtils;
-import com.olmur.rvtools.property.IBackgroundDrawer;
-import com.olmur.rvtools.property.IBinderViewHolder;
-import com.olmur.rvtools.property.IDrawControlViewHolder;
-import com.olmur.rvtools.property.IGestureSensitiveViewHolder;
-import com.olmur.rvtools.property.ISortableAdapter;
+import com.olmur.rvtools.property.ISwipeContextMenuDrawer;
+import com.olmur.rvtools.property.ISwipeContextMenuProvider;
+import com.olmur.rvtools.property.IViewHolderSelector;
+import com.olmur.rvtools.property.IOnOrderChangedListener;
 
 import java.util.Arrays;
 
-public class MainAdapter extends BaseRecyclerAdapter<MainEntity, MainAdapter.ViewHolder> implements ISortableAdapter {
+public class MainAdapter extends BaseRecyclerAdapter<MainEntity, MainAdapter.ViewHolder> implements IOnOrderChangedListener {
+    private static final String TAG = "MainAdapter";
 
-    private IBackgroundDrawer mDrawer1;
-    private IBackgroundDrawer mDrawer2;
+    private ISwipeContextMenuDrawer mDrawer1;
+    private ISwipeContextMenuDrawer mDrawer2;
 
     MainAdapter(@NonNull Context context, MainEntity[] data) {
         super(context);
         mAdapterContent.addAll(Arrays.asList(data));
-        mDrawer1 = new BackgroundDrawer1();
+        mDrawer1 = new SwipeMenuDrawer1();
         mDrawer2 = new BackgroundDrawer2();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements IBinderViewHolder<MainEntity>, IGestureSensitiveViewHolder, IDrawControlViewHolder {
+    public class ViewHolder extends BaseRecyclerAdapter.BaseViewHolder<MainEntity> implements IViewHolderSelector, ISwipeContextMenuProvider {
 
         private TextView mTitleTv;
 
@@ -48,21 +48,21 @@ public class MainAdapter extends BaseRecyclerAdapter<MainEntity, MainAdapter.Vie
 
         // Define view behaviour on item select
         @Override
-        public void onItemSelected() {
+        public void onSelected() {
             itemView.setBackgroundColor(Color.BLUE);
             mTitleTv.setTextColor(Color.WHITE);
         }
 
         // Define view behaviour on item deselect
         @Override
-        public void onItemReleased() {
+        public void onReleased() {
             itemView.setBackgroundColor(Color.WHITE);
             mTitleTv.setTextColor(Color.GRAY);
         }
 
         // Provide custom background drawer for current view holder
         @Override
-        public IBackgroundDrawer getBackgroundDrawer() {
+        public ISwipeContextMenuDrawer getSwipeMenuDrawer() {
             return mAdapterContent.get(getAdapterPosition()).isSwipeFlag() ? mDrawer1 : mDrawer2;
         }
     }
@@ -84,7 +84,7 @@ public class MainAdapter extends BaseRecyclerAdapter<MainEntity, MainAdapter.Vie
     }
 
     @Override
-    public void saveSorting() {
-        // Save items order
+    public void onOrderChanged() {
+        Log.d(TAG, "onOrderChanged: ");
     }
 }

@@ -4,51 +4,61 @@ import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
-import com.olmur.rvtools.property.IBackgroundDrawer;
-import com.olmur.rvtools.property.IDrawControlViewHolder;
-import com.olmur.rvtools.property.IGestureSensitiveViewHolder;
+import com.olmur.rvtools.property.ISwipeContextMenuDrawer;
+import com.olmur.rvtools.property.ISwipeContextMenuProvider;
+import com.olmur.rvtools.property.IViewHolderSelector;
 import com.olmur.rvtools.property.IOnMoveAction;
+import com.olmur.rvtools.property.IOnOrderChangedListener;
 import com.olmur.rvtools.property.IOnSwipeLeftAction;
 import com.olmur.rvtools.property.IOnSwipeRightAction;
-import com.olmur.rvtools.property.ISortableAdapter;
 
 
-public class RecyclerTouchGestureHelper extends ItemTouchHelper.Callback {
+public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
+    private static final String TAG = "RecyclerTouchGestureHel";
 
     public static class Builder {
 
-        private RecyclerTouchGestureHelper mGestureHelper;
+        private ItemTouchHelperCallback mGestureHelper;
 
         public Builder() {
-            mGestureHelper = new RecyclerTouchGestureHelper();
+            mGestureHelper = new ItemTouchHelperCallback();
         }
 
-        public Builder withSwipeLeftListener(IOnSwipeLeftAction listener) {
+        public Builder withSwipeLeftAction(IOnSwipeLeftAction action) {
             mGestureHelper.setSwipeLeft(true);
-            mGestureHelper.setSwipeLeftAction(listener);
+            mGestureHelper.setSwipeLeftAction(action);
             return this;
         }
 
-        public Builder withSwipeRightListener(IOnSwipeRightAction listener) {
+        public Builder withSwipeRightAction(IOnSwipeRightAction action) {
             mGestureHelper.setSwipeRight(true);
-            mGestureHelper.setSwipeRightAction(listener);
+            mGestureHelper.setSwipeRightAction(action);
             return this;
         }
 
-        public Builder withMoveListener(IOnMoveAction listener, int moveFlags) {
+        public Builder withMoveAction(IOnMoveAction action, IOnOrderChangedListener listener, int moveFlags) {
             mGestureHelper.setMove(true);
-            mGestureHelper.setMoveAction(listener);
+            mGestureHelper.setMoveAction(action);
+            mGestureHelper.setOnOrderChangedListener(listener);
             mGestureHelper.setMoveFlags(moveFlags);
             return this;
         }
 
-        public Builder withBackgroundDrawer(IBackgroundDrawer drawer) {
+        public Builder withSwipeContextMenuDrawer(ISwipeContextMenuDrawer drawer) {
             mGestureHelper.setBackgroundDrawer(drawer);
             return this;
         }
 
-        public RecyclerTouchGestureHelper build() {
+        public ItemTouchHelperCallback buildCallbacks() {
             return mGestureHelper;
+        }
+
+        public ItemTouchHelper buildItemTouchHelper() {
+            return new ItemTouchHelper(mGestureHelper);
+        }
+
+        public void attachToRecyclerView(RecyclerView recyclerView) {
+            buildItemTouchHelper().attachToRecyclerView(recyclerView);
         }
     }
 
@@ -62,9 +72,13 @@ public class RecyclerTouchGestureHelper extends ItemTouchHelper.Callback {
     private IOnSwipeRightAction mSwipeRightAction;
     private IOnMoveAction mMoveAction;
 
-    private IBackgroundDrawer mIBackgroundDrawer;
+    private IOnOrderChangedListener mOnOrderChangedListener;
+    private boolean mWasMoved;
 
-    private RecyclerTouchGestureHelper() {}
+    private ISwipeContextMenuDrawer mIBackgroundDrawer;
+
+    private ItemTouchHelperCallback() {
+    }
 
 
     // Setters
@@ -97,8 +111,12 @@ public class RecyclerTouchGestureHelper extends ItemTouchHelper.Callback {
         mMoveAction = moveAction;
     }
 
-    private void setBackgroundDrawer(IBackgroundDrawer IBackgroundDrawer) {
+    private void setBackgroundDrawer(ISwipeContextMenuDrawer IBackgroundDrawer) {
         mIBackgroundDrawer = IBackgroundDrawer;
+    }
+
+    public void setOnOrderChangedListener(IOnOrderChangedListener onOrderChangedListener) {
+        mOnOrderChangedListener = onOrderChangedListener;
     }
 
     // Setters
@@ -143,11 +161,11 @@ public class RecyclerTouchGestureHelper extends ItemTouchHelper.Callback {
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
         if (direction == ItemTouchHelper.LEFT) {
             if (mSwipeLeftAction != null) {
-                mSwipeLeftAction.onSwipeLeftAction(viewHolder.getAdapterPosition());
+                mSwipeLeftAction.onSwipeLeft(viewHolder.getAdapterPosition());
             }
         } else {
             if (mSwipeRightAction != null) {
-                mSwipeRightAction.onSwipeRightAction(viewHolder.getAdapterPosition());
+                mSwipeRightAction.onSwipeRight(viewHolder.getAdapterPosition());
             }
         }
     }
@@ -159,15 +177,15 @@ public class RecyclerTouchGestureHelper extends ItemTouchHelper.Callback {
         // If we have no default background drawer -> try find one in view holder
         // Some lists have one background drawer for all item
         // Some have different drawer for each item
-        if (viewHolder instanceof IDrawControlViewHolder) {
-            mIBackgroundDrawer = ((IDrawControlViewHolder) viewHolder).getBackgroundDrawer();
+        if (viewHolder instanceof ISwipeContextMenuProvider) {
+            mIBackgroundDrawer = ((ISwipeContextMenuProvider) viewHolder).getSwipeMenuDrawer();
         }
 
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && mIBackgroundDrawer != null) {
             if (dX < 0) {
-                mIBackgroundDrawer.drawSwipeLeft(c, viewHolder.itemView);
+                mIBackgroundDrawer.drawLeft(c, viewHolder.itemView);
             } else {
-                mIBackgroundDrawer.drawSwipeRight(c, viewHolder.itemView);
+                mIBackgroundDrawer.drawRight(c, viewHolder.itemView);
             }
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         } else {
@@ -177,9 +195,9 @@ public class RecyclerTouchGestureHelper extends ItemTouchHelper.Callback {
 
     @Override
     public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
-        if (actionState != ItemTouchHelper.ACTION_STATE_IDLE && viewHolder instanceof IGestureSensitiveViewHolder) {
-            IGestureSensitiveViewHolder itemViewHolder = (IGestureSensitiveViewHolder) viewHolder;
-            itemViewHolder.onItemSelected();
+        if (actionState != ItemTouchHelper.ACTION_STATE_IDLE && viewHolder instanceof IViewHolderSelector) {
+            IViewHolderSelector itemViewHolder = (IViewHolderSelector) viewHolder;
+            itemViewHolder.onSelected();
         }
         super.onSelectedChanged(viewHolder, actionState);
     }
@@ -188,11 +206,20 @@ public class RecyclerTouchGestureHelper extends ItemTouchHelper.Callback {
     public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
         final int adapterPosition = viewHolder.getAdapterPosition();
-        if (viewHolder instanceof IGestureSensitiveViewHolder && adapterPosition >= 0) {
-            ((IGestureSensitiveViewHolder) viewHolder).onItemReleased();
+        if (viewHolder instanceof IViewHolderSelector && adapterPosition >= 0) {
+            ((IViewHolderSelector) viewHolder).onReleased();
         }
-        if (recyclerView.getAdapter() instanceof ISortableAdapter) {
-            ((ISortableAdapter) recyclerView.getAdapter()).saveSorting();
+
+        if (mWasMoved && mOnOrderChangedListener != null) {
+            mWasMoved = false;
+            mOnOrderChangedListener.onOrderChanged();
         }
     }
+
+    @Override
+    public void onMoved(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, int fromPos, RecyclerView.ViewHolder target, int toPos, int x, int y) {
+        super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y);
+        mWasMoved = true;
+    }
+
 }

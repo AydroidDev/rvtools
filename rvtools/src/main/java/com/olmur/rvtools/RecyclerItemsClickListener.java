@@ -8,7 +8,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-public class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
+public class RecyclerItemsClickListener implements RecyclerView.OnItemTouchListener {
 
     public interface OnClickListener {
         void onClick(View view, int position);
@@ -22,7 +22,7 @@ public class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
     private OnClickListener mOnClickListener;
     private OnLongClickListener mOnLongClickListener;
 
-    public RecyclerTouchListener(Context context, @NonNull final RecyclerView recyclerView, @Nullable OnClickListener onClickListener, @Nullable OnLongClickListener onLongClickListener) {
+    public RecyclerItemsClickListener(Context context, @NonNull final RecyclerView recyclerView, @Nullable OnClickListener onClickListener, @Nullable OnLongClickListener onLongClickListener) {
         mOnClickListener = onClickListener;
         mOnLongClickListener = onLongClickListener;
         gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {

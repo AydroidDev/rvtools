@@ -6,18 +6,18 @@ import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.view.View;
 
-import com.olmur.rvtools.property.IBackgroundDrawer;
+import com.olmur.rvtools.property.ISwipeContextMenuDrawer;
 
 /**
  * Created by olexiimuraviov on 2/8/17.
  */
 
-public class BackgroundDrawer1 implements IBackgroundDrawer {
+public class SwipeMenuDrawer1 implements ISwipeContextMenuDrawer {
 
     private final Paint mLeftPaint;
     private final Paint mRightPaint;
 
-    public BackgroundDrawer1() {
+    public SwipeMenuDrawer1() {
         mLeftPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mRightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mLeftPaint.setColor(Color.GREEN);
@@ -25,12 +25,12 @@ public class BackgroundDrawer1 implements IBackgroundDrawer {
     }
 
     @Override
-    public void drawSwipeRight(@NonNull Canvas canvas, @NonNull View view) {
+    public void drawRight(@NonNull Canvas canvas, @NonNull View view) {
         canvas.drawRect(view.getLeft(), view.getTop(), view.getRight(), view.getBottom(), mLeftPaint);
     }
 
     @Override
-    public void drawSwipeLeft(@NonNull Canvas canvas, @NonNull View view) {
+    public void drawLeft(@NonNull Canvas canvas, @NonNull View view) {
         canvas.drawRect(view.getLeft(), view.getTop(), view.getRight(), view.getBottom(), mRightPaint);
     }
 }

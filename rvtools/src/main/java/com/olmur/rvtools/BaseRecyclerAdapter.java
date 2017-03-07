@@ -3,13 +3,12 @@ package com.olmur.rvtools;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-
-import com.olmur.rvtools.property.IBinderViewHolder;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class BaseRecyclerAdapter<Model, VH extends RecyclerView.ViewHolder & IBinderViewHolder<Model>> extends RecyclerView.Adapter<VH> {
+public abstract class BaseRecyclerAdapter<Model, VH extends BaseRecyclerAdapter.BaseViewHolder> extends RecyclerView.Adapter<VH> {
 
     protected List<Model> mAdapterContent;
     protected Context mContext;
@@ -17,6 +16,14 @@ public abstract class BaseRecyclerAdapter<Model, VH extends RecyclerView.ViewHol
     public BaseRecyclerAdapter(@NonNull Context context) {
         mContext = context;
         mAdapterContent = new ArrayList<>();
+    }
+
+    public static abstract class BaseViewHolder<Model> extends RecyclerView.ViewHolder {
+        public BaseViewHolder(@NonNull View view) {
+            super(view);
+        }
+
+        public abstract void bindView(Model element);
     }
 
     @Override
