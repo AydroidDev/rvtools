@@ -1,9 +1,5 @@
 package com.olmur.recyclerviewtools;
 
-/**
- * Created by olexiimuraviov on 2/8/17.
- */
-
 public class MainEntity {
 
     private String mTitle;

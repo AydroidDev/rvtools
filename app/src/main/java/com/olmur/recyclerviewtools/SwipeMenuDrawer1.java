@@ -8,10 +8,6 @@ import android.view.View;
 
 import com.olmur.rvtools.property.ISwipeContextMenuDrawer;
 
-/**
- * Created by olexiimuraviov on 2/8/17.
- */
-
 public class SwipeMenuDrawer1 implements ISwipeContextMenuDrawer {
 
     private final Paint mLeftPaint;
