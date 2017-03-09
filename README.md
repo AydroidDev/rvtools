@@ -1,7 +1,5 @@
 # RvTools
-<strong>Tools for controlling recycler view.</strong> 
-<p>Define <b>swipe</b> and <b>move</b> gestures, change items <b>appearance</b> on select/deselect, <b>reorder</b> items, 
-define <b>background drawer</b> for whole list and for individual items, define <b>empty view</b>.</p>
+<strong>Define swipe gestures, move list items and change their appearance.</strong> 
 
 ![alt tag](https://github.com/olmur/rvtools/blob/master/snapshot.png)
 
@@ -12,9 +10,9 @@ public class MainAdapter extends BaseRecyclerAdapter<MainEntity, MainAdapter.Vie
   ...
 }
 ```
-Create ViewHolder wich implements <b>IBinderViewHolder</b> interface
+Create ViewHolder that extends BaseViewHolder 
 ``` Java
-public class ViewHolder extends RecyclerView.ViewHolder implements IBinderViewHolder<MainEntity> {
+public class ViewHolder extends BaseRecyclerAdapter.BaseViewHolder<MainEntity> {
         private TextView mTitleTv;
 
         ViewHolder(@NonNull View view) {
@@ -29,13 +27,7 @@ public class ViewHolder extends RecyclerView.ViewHolder implements IBinderViewHo
 }
 ```
 
-Create <b>EmptyRecyclerView</b> and provide it with empty view
-``` Java
-EmptyRecyclerView recyclerView = (EmptyRecyclerView) findViewById(R.id.empty_recycler_view);
-recyclerView.setEmptyView(emptyView);
-```
-
-Create <b>Gestures Listener</b>
+Create <b>Gestures Listeners</b>
 ``` Java
 public class MainActivity extends AppCompatActivity implements IOnSwipeLeftAction, IOnSwipeRightAction, IOnMoveAction {
    @Override
@@ -45,94 +37,75 @@ public class MainActivity extends AppCompatActivity implements IOnSwipeLeftActio
 
     @Override
     public void onSwipeLeftAction(int position) {
-        mAdapter.doSomething(position);
+        mAdapter.deletItem(position);
     }
 
     @Override
     public void onSwipeRightAction(int position) {
-        mAdapter.doSomething(position);
+        mAdapter.changeItem(position);
     }
 }
 ```
 
-Create <b>background drawer</b>
+Create <b>Swipe Context Menu Drawer</b>
 ``` Java
-public class BackgroundDrawer1 implements IBackgroundDrawer {
+public class SwipeMenuDrawer extends SwipeContextMenuDrawer {
 
     private final Paint mLeftPaint;
     private final Paint mRightPaint;
 
-    public BackgroundDrawer1() {
+    public SwipeMenuDrawer() {
         mLeftPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mRightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mLeftPaint.setColor(Color.GREEN);
-        mRightPaint.setColor(Color.CYAN);
+        mRightPaint.setColor(Color.RED);
     }
 
     @Override
-    public void drawSwipeRight(@NonNull Canvas canvas, @NonNull View view) {
+    public void drawRight(@NonNull Canvas canvas, @NonNull View view) {
         canvas.drawRect(view.getLeft(), view.getTop(), view.getRight(), view.getBottom(), mLeftPaint);
     }
 
     @Override
-    public void drawSwipeLeft(@NonNull Canvas canvas, @NonNull View view) {
+    public void drawLeft(@NonNull Canvas canvas, @NonNull View view) {
         canvas.drawRect(view.getLeft(), view.getTop(), view.getRight(), view.getBottom(), mRightPaint);
     }
 }
 ```
 
-Build <b>ItemTouchHelper.Callback</b>
+To add different behaviour on item select/release implement <b>IViewHolderSelector</b> interface in ViewHolder
 ``` Java
-ItemTouchHelper.Callback itemTouchCallBack = new RecyclerTouchGestureHelper.Builder()
-                .withSwipeRightListener(this)
-                .withSwipeLeftListener(this)
-                .withMoveListener(this)
-                // Default for whole recycler view
-                .withBackgroundDrawer(new BackgroundDrawer1())
-                .build();
-```
-Create <b>ItemTouchHelper</b> and <b>attach</b> it to recycler view
-``` Java
- final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemTouchCallBack);
- itemTouchHelper.attachToRecyclerView(recyclerView);
-```
-
-To add different behaviour on select/deselct implement <b>IGestureSensitiveViewHolder</b> interface in ViewHolder
-``` Java
- public class ViewHolder extends RecyclerView.ViewHolder implements IBinderViewHolder<MainEntity>, IGestureSensitiveViewHolder {
+ public class ViewHolder extends BaseRecyclerAdapter.BaseViewHolder<MainEntity> implements IViewHolderSelector {
          ... 
         @Override
-        public void onItemSelected() {
-            itemView.setBackgroundColor(Color.BLUE);
+        public void onSelected() {
+            itemView.setBackgroundColor(Color.GRAY);
             mTitleTv.setTextColor(Color.WHITE);
         }
 
         @Override
-        public void onItemReleased() {
+        public void onReleased() {
             itemView.setBackgroundColor(Color.WHITE);
             mTitleTv.setTextColor(Color.GRAY);
         }
  }
 ```
 
-To add custom background drawers for each item implement <b>IDrawControlViewHolder</b>
+Create <b>EmptyRecyclerView</b> and provide it with empty view
 ``` Java
- public class ViewHolder extends RecyclerView.ViewHolder implements IBinderViewHolder<MainEntity>, IGestureSensitiveViewHolder, IDrawControlViewHolder {
-         ...
-        @Override
-        public IBackgroundDrawer getBackgroundDrawer() {
-            return mAdapterContent.get(getAdapterPosition()).isSwipeFlag() ? mDrawer1 : mDrawer2;
-        }
-}
+EmptyRecyclerView recyclerView = (EmptyRecyclerView) findViewById(R.id.empty_recycler_view);
+recyclerView.setEmptyView(emptyView);
 ```
 
-To <b>save items order</b> implement <b>ISortableAdapter</b> interface in Adapter
+Create RvTools for your RecyclerView
+
 ``` Java
-public class MainAdapter extends BaseRecyclerAdapter<MainEntity, MainAdapter.ViewHolder> implements ISortableAdapter {
-       ...
-       @Override
-        public void saveSorting() {
-        // Save items order
-        }
-}
+  new RvTools.Builder(recyclerView)
+                 .withSwipeRightAction(this)
+                 .withSwipeLeftAction(this)
+                 .withMoveAction(this, mAdapter, ItemTouchHelper.DOWN | ItemTouchHelper.UP)
+                 .withSwipeContextMenuDrawer(new SwipeMenuDrawer())
+                 .buildAndApplyToRecyclerView();
 ```
+
+That's it :)
