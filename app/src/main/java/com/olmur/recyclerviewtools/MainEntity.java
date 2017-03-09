@@ -1,12 +1,10 @@
 package com.olmur.recyclerviewtools;
 
-public class MainEntity {
+class MainEntity {
 
     private String mTitle;
 
-    private boolean mSwipeFlag;
-
-    public MainEntity(String title) {
+    MainEntity(String title) {
         mTitle = title;
     }
 
@@ -14,11 +12,7 @@ public class MainEntity {
         return mTitle;
     }
 
-    public boolean isSwipeFlag() {
-        return mSwipeFlag;
-    }
-
-    public void changeSwipeFlag() {
-        mSwipeFlag = !mSwipeFlag;
+    public void setTitle(String title) {
+        mTitle = title;
     }
 }

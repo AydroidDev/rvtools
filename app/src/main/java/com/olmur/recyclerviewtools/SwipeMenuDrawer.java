@@ -8,16 +8,16 @@ import android.view.View;
 
 import com.olmur.rvtools.SwipeContextMenuDrawer;
 
-public class BackgroundDrawer2 extends SwipeContextMenuDrawer {
+class SwipeMenuDrawer extends SwipeContextMenuDrawer {
 
     private final Paint mLeftPaint;
     private final Paint mRightPaint;
 
-    public BackgroundDrawer2() {
+    SwipeMenuDrawer() {
         mLeftPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mRightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mLeftPaint.setColor(Color.YELLOW);
-        mRightPaint.setColor(Color.GRAY);
+        mLeftPaint.setColor(Color.GREEN);
+        mRightPaint.setColor(Color.RED);
     }
 
     @Override
