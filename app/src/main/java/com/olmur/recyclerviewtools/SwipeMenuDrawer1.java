@@ -6,9 +6,9 @@ import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.view.View;
 
-import com.olmur.rvtools.property.ISwipeContextMenuDrawer;
+import com.olmur.rvtools.SwipeContextMenuDrawer;
 
-public class SwipeMenuDrawer1 implements ISwipeContextMenuDrawer {
+public class SwipeMenuDrawer1 extends SwipeContextMenuDrawer {
 
     private final Paint mLeftPaint;
     private final Paint mRightPaint;

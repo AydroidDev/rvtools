@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.olmur.rvtools.BaseRecyclerAdapter;
 import com.olmur.rvtools.GestureUtils;
-import com.olmur.rvtools.property.ISwipeContextMenuDrawer;
+import com.olmur.rvtools.SwipeContextMenuDrawer;
 import com.olmur.rvtools.property.ISwipeContextMenuProvider;
 import com.olmur.rvtools.property.IViewHolderSelector;
 import com.olmur.rvtools.property.IOnOrderChangedListener;
@@ -21,8 +21,8 @@ import java.util.Arrays;
 public class MainAdapter extends BaseRecyclerAdapter<MainEntity, MainAdapter.ViewHolder> implements IOnOrderChangedListener {
     private static final String TAG = "MainAdapter";
 
-    private ISwipeContextMenuDrawer mDrawer1;
-    private ISwipeContextMenuDrawer mDrawer2;
+    private SwipeContextMenuDrawer mDrawer1;
+    private SwipeContextMenuDrawer mDrawer2;
 
     MainAdapter(@NonNull Context context, MainEntity[] data) {
         super(context);
@@ -62,7 +62,7 @@ public class MainAdapter extends BaseRecyclerAdapter<MainEntity, MainAdapter.Vie
 
         // Provide custom background drawer for current view holder
         @Override
-        public ISwipeContextMenuDrawer getSwipeMenuDrawer() {
+        public SwipeContextMenuDrawer getSwipeMenuDrawer() {
             return mAdapterContent.get(getAdapterPosition()).isSwipeFlag() ? mDrawer1 : mDrawer2;
         }
     }

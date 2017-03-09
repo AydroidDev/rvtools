@@ -7,7 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
 import com.olmur.rvtools.EmptyRecyclerView;
-import com.olmur.rvtools.ItemTouchHelperCallback;
+import com.olmur.rvtools.RvTools;
 import com.olmur.rvtools.property.IOnMoveAction;
 import com.olmur.rvtools.property.IOnSwipeLeftAction;
 import com.olmur.rvtools.property.IOnSwipeRightAction;
@@ -38,14 +38,12 @@ public class MainActivity extends AppCompatActivity implements IOnSwipeLeftActio
         // Define empty view and recycler view will handle its rendering
         // recyclerView.setEmptyView(YOUR_EMPTY_VIEW);
 
-        new ItemTouchHelperCallback.Builder()
+        new RvTools.Builder(recyclerView)
                 .withSwipeRightAction(this)
                 .withSwipeLeftAction(this)
                 .withMoveAction(this, mAdapter, ItemTouchHelper.DOWN | ItemTouchHelper.UP)
-                // Provide default swipe contextual menu drawer
-                // or use different drawer per view holder
                 .withSwipeContextMenuDrawer(new SwipeMenuDrawer1())
-                .attachToRecyclerView(recyclerView);
+                .buildAndApplyToRecyclerView();
     }
 
     @Override

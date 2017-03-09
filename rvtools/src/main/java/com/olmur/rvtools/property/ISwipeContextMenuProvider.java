@@ -1,5 +1,7 @@
 package com.olmur.rvtools.property;
 
+import com.olmur.rvtools.SwipeContextMenuDrawer;
+
 public interface ISwipeContextMenuProvider {
-    ISwipeContextMenuDrawer getSwipeMenuDrawer();
+    SwipeContextMenuDrawer getSwipeMenuDrawer();
 }
