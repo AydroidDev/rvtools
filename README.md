@@ -4,13 +4,18 @@
 ![alt tag](https://github.com/olmur/rvtools/blob/master/snapshot.png)
 
 
+<b>Add lib to your project</b>
+``` Gradle
+compile 'com.olmur.rvtools:rvtools:0.0.2'
+```
+
 Extend <b>BaseRecyclerAdapter</b> class
 ``` Java
 public class MainAdapter extends BaseRecyclerAdapter<MainEntity, MainAdapter.ViewHolder> {
   ...
 }
 ```
-Create ViewHolder that extends BaseViewHolder 
+Create <b>ViewHolder that extends BaseViewHolder</b> 
 ``` Java
 public class ViewHolder extends BaseRecyclerAdapter.BaseViewHolder<MainEntity> {
         private TextView mTitleTv;
