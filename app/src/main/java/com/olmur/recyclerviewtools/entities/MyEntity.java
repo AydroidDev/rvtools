@@ -1,10 +1,10 @@
-package com.olmur.recyclerviewtools;
+package com.olmur.recyclerviewtools.entities;
 
-class MainEntity {
+public class MyEntity {
 
     private String mTitle;
 
-    MainEntity(String title) {
+    public MyEntity(String title) {
         mTitle = title;
     }
 
