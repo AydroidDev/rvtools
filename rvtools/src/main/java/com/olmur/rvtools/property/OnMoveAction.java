@@ -1,5 +1,5 @@
 package com.olmur.rvtools.property;
 
-public interface IOnMoveAction {
+public interface OnMoveAction {
     void onMove(int fromPosition, int toPosition);
 }

@@ -1,6 +1,6 @@
 package com.olmur.rvtools.property;
 
-public interface IViewHolderSelector {
+public interface ViewHolderSelector {
 
     void onSelected();
 

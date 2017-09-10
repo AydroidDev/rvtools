@@ -1,5 +1,5 @@
 package com.olmur.rvtools.property;
 
-public interface IOnOrderChangedListener {
+public interface OnOrderChangedListener {
     void onOrderChanged();
 }

@@ -1,5 +1,5 @@
 package com.olmur.rvtools.property;
 
-public interface IOnSwipeRightAction {
+public interface OnSwipeRightAction {
     void onSwipeRight(int position);
 }
