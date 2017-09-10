@@ -1,4 +1,4 @@
-package com.olmur.rvtools;
+package com.olmur.rvtools.recyclerview;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -7,20 +7,20 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
-public class EmptyRecyclerView extends RecyclerView {
+public class RvtRecyclerView extends RecyclerView {
 
     @Nullable
-    View emptyView;
+    private View emptyView;
 
-    public EmptyRecyclerView(Context context) {
+    public RvtRecyclerView(Context context) {
         super(context);
     }
 
-    public EmptyRecyclerView(Context context, AttributeSet attrs) {
+    public RvtRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public EmptyRecyclerView(Context context, AttributeSet attrs, int defStyle) {
+    public RvtRecyclerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
