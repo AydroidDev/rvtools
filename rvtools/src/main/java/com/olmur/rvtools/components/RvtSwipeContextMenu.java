@@ -16,7 +16,7 @@ import android.support.annotation.Px;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 
-import com.olmur.rvtools.utils.Constants;
+import com.olmur.rvtools.utils.RvtConstants;
 import com.olmur.rvtools.utils.RvtUtils;
 
 public final class RvtSwipeContextMenu implements SwipeContextMenuDrawer {
@@ -28,10 +28,10 @@ public final class RvtSwipeContextMenu implements SwipeContextMenuDrawer {
 
         private Context context;
 
-        private int leftIconRes = Constants.Empty.INT;
-        private int rightIconRes = Constants.Empty.INT;
+        private int leftIconRes = RvtConstants.Empty.INT;
+        private int rightIconRes = RvtConstants.Empty.INT;
 
-        private int iconSizePx = Constants.Empty.INT;
+        private int iconSizePx = RvtConstants.Empty.INT;
 
         public Builder(Context context) {
             this.context = context;
@@ -82,10 +82,10 @@ public final class RvtSwipeContextMenu implements SwipeContextMenuDrawer {
 
         public RvtSwipeContextMenu build() {
 
-            if (leftIconRes == Constants.Empty.INT || rightIconRes == Constants.Empty.INT)
+            if (leftIconRes == RvtConstants.Empty.INT || rightIconRes == RvtConstants.Empty.INT)
                 return rvtSwipeContextMenu;
 
-            if (iconSizePx == Constants.Empty.INT) {
+            if (iconSizePx == RvtConstants.Empty.INT) {
                 iconSizePx = RvtUtils.Resources.dpToPixels(context, 32);
             }
 
