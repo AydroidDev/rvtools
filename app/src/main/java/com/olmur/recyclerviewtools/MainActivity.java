@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,12 +14,12 @@ import android.view.View;
 
 import com.olmur.recyclerviewtools.adapter.MyAdapter;
 import com.olmur.recyclerviewtools.entities.MyEntity;
-import com.olmur.rvtools.components.RvtSwipeContextMenu;
-import com.olmur.rvtools.recyclerview.RvtRecyclerView;
 import com.olmur.rvtools.RvTools;
+import com.olmur.rvtools.components.RvtSwipeContextMenu;
 import com.olmur.rvtools.property.OnOrderChangedListener;
 import com.olmur.rvtools.property.OnSwipeLeftAction;
 import com.olmur.rvtools.property.OnSwipeRightAction;
+import com.olmur.rvtools.recyclerview.RvtRecyclerView;
 
 import java.util.Arrays;
 
@@ -52,7 +53,14 @@ public class MainActivity extends AppCompatActivity implements OnSwipeLeftAction
         View emptyView = findViewById(R.id.empty_view);
 
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(layoutManager);
+
+        DividerItemDecoration dividerItemDecoration =
+                new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
+
+        recyclerView.addItemDecoration(dividerItemDecoration);
 
         myAdapter = new MyAdapter();
         myAdapter.addData(Arrays.asList(data));
@@ -79,12 +87,6 @@ public class MainActivity extends AppCompatActivity implements OnSwipeLeftAction
 
         rvTools.bind(recyclerView);
         Snackbar.make(root, "RvTools binded", Snackbar.LENGTH_LONG).show();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        rvTools.unbind();
     }
 
     @Override
