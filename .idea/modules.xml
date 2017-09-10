@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/RvTools.iml" filepath="$PROJECT_DIR$/RvTools.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/recyclerviewtools.iml" filepath="$PROJECT_DIR$/recyclerviewtools.iml" />
       <module fileurl="file://$PROJECT_DIR$/rvtools/rvtools.iml" filepath="$PROJECT_DIR$/rvtools/rvtools.iml" />
     </modules>
   </component>
