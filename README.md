@@ -35,14 +35,13 @@ public class MyViewHolder extends RvtRecyclerAdapter.RvtViewHolder<MyEntity> {
 
 Create <b>Gestures Listeners</b>
 ``` Java
-public class MainActivity extends AppCompatActivity implements IOnSwipeLeftAction, IOnSwipeRightAction, OnOrderChangedListener {
+public class MainActivity extends AppCompatActivity implements OnSwipeLeftAction, OnSwipeRightAction, OnOrderChangedListener {
 
     @Override
     public void onSwipeLeftAction(int position) {
         adapter.deletItem(position);
     }
     
-
     @Override
     public void onSwipeRightAction(int position) {
         adapter.changeItem(position);
