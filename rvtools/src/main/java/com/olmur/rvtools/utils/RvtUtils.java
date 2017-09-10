@@ -1,14 +1,18 @@
 package com.olmur.rvtools.utils;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Px;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
+import android.view.View;
 
 import java.util.Collections;
 import java.util.List;
@@ -58,6 +62,23 @@ public class RvtUtils {
             android.content.res.Resources resources = context.getResources();
             DisplayMetrics metrics = resources.getDisplayMetrics();
             return px / (metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        }
+
+    }
+
+    public static class Views {
+
+        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+        public static void changeElevation(@NonNull View target, int toDp, long durationMillis) {
+            target.animate().translationZ(toDp).setDuration(durationMillis).start();
+        }
+
+    }
+
+    public static class Platform {
+
+        public static boolean isApi21AndAbove() {
+            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
         }
 
     }
