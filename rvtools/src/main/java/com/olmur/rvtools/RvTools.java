@@ -206,9 +206,10 @@ public final class RvTools {
             itemTouchUIUtil.onDraw(c, recyclerView, viewHolder.itemView, dX, dY, actionState, isCurrentlyActive);
         }
 
+
         @Override
         public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
-            if (actionState != ItemTouchHelper.ACTION_STATE_IDLE && viewHolder instanceof ViewHolderSelector) {
+            if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && viewHolder instanceof ViewHolderSelector) {
                 ViewHolderSelector itemViewHolder = (ViewHolderSelector) viewHolder;
                 itemViewHolder.onSelected();
             }
