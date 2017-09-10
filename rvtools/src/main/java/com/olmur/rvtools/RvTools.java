@@ -1,207 +1,215 @@
 package com.olmur.rvtools;
 
 import android.graphics.Canvas;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.support.v7.widget.helper.ItemTouchUIUtil;
 
-import com.olmur.rvtools.property.IOnMoveAction;
-import com.olmur.rvtools.property.IOnOrderChangedListener;
-import com.olmur.rvtools.property.IOnSwipeLeftAction;
-import com.olmur.rvtools.property.IOnSwipeRightAction;
-import com.olmur.rvtools.property.ISwipeContextMenuProvider;
-import com.olmur.rvtools.property.IViewHolderSelector;
+import com.olmur.rvtools.adapter.RvtRecycleAdapter;
+import com.olmur.rvtools.components.SwipeContextMenuDrawer;
+import com.olmur.rvtools.property.OnOrderChangedListener;
+import com.olmur.rvtools.property.OnSwipeLeftAction;
+import com.olmur.rvtools.property.OnSwipeRightAction;
+import com.olmur.rvtools.property.SwipeContextMenuProvider;
+import com.olmur.rvtools.property.ViewHolderSelector;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 
-public class RvTools {
+public final class RvTools {
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({LEFT, RIGHT, UP, DOWN})
+    public @interface Direction {
+    }
+
+    public static final int LEFT = ItemTouchHelper.LEFT;
+    public static final int RIGHT = ItemTouchHelper.RIGHT;
+    public static final int UP = ItemTouchHelper.UP;
+    public static final int DOWN = ItemTouchHelper.DOWN;
+
+
+    private ItemTouchHelper itemTouchHelper;
+
+    private RvTools(@NonNull ItemTouchHelperCallbacks itemTouchHelperCallbacks) {
+        this.itemTouchHelper = new ItemTouchHelper(itemTouchHelperCallbacks);
+    }
+
+    public void bind(@NonNull RecyclerView recyclerView) {
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    public void unbind() {
+        itemTouchHelper.attachToRecyclerView(null);
+    }
 
     public static class Builder {
 
-        private ItemTouchHelperCallbacks mItemTouchHelperCallback;
+        private ItemTouchHelperCallbacks itemTouchHelperCallback;
 
-        private RecyclerView mRecyclerView;
-
-        public Builder(@NonNull RecyclerView recyclerView) {
-            mItemTouchHelperCallback = new ItemTouchHelperCallbacks();
-            mRecyclerView = recyclerView;
+        public Builder() {
+            itemTouchHelperCallback = new ItemTouchHelperCallbacks();
         }
 
-        public Builder withSwipeLeftAction(@NonNull IOnSwipeLeftAction action) {
-            mItemTouchHelperCallback.setSwipeLeft(true);
-            mItemTouchHelperCallback.setSwipeLeftAction(action);
+        public Builder withSwipeLeftAction(@NonNull OnSwipeLeftAction action) {
+            itemTouchHelperCallback.setSwipeLeftAction(action);
             return this;
         }
 
-        public Builder withSwipeRightAction(@NonNull IOnSwipeRightAction action) {
-            mItemTouchHelperCallback.setSwipeRight(true);
-            mItemTouchHelperCallback.setSwipeRightAction(action);
+        public Builder withSwipeRightAction(@NonNull OnSwipeRightAction action) {
+            itemTouchHelperCallback.setSwipeRightAction(action);
             return this;
         }
 
-        public Builder withMoveAction(@NonNull IOnMoveAction action, @NonNull IOnOrderChangedListener listener, int moveFlags) {
-            mItemTouchHelperCallback.setMove(true);
-            mItemTouchHelperCallback.setMoveAction(action);
-            mItemTouchHelperCallback.setOnOrderChangedListener(listener);
-            mItemTouchHelperCallback.setMoveFlags(moveFlags);
+        public Builder withMoveAction(@NonNull OnOrderChangedListener listener, @Direction int... moveDirections) {
+            itemTouchHelperCallback.setMoveGestureEnabled();
+            itemTouchHelperCallback.setOnOrderChangedListener(listener);
+            itemTouchHelperCallback.setMoveDirections(moveDirections);
             return this;
         }
 
         public Builder withSwipeContextMenuDrawer(@NonNull SwipeContextMenuDrawer drawer) {
-            mItemTouchHelperCallback.setBackgroundDrawer(drawer);
+            itemTouchHelperCallback.setSwipeContextMenuDrawer(drawer);
             return this;
         }
 
-        public ItemTouchHelperCallbacks buildItemTouchHelperCallbacks() {
-            return mItemTouchHelperCallback;
-        }
-
-        public ItemTouchHelper buildItemTouchHelper() {
-            return new ItemTouchHelper(mItemTouchHelperCallback);
-        }
-
-
-        public void buildAndApplyToRecyclerView() {
-            if (mItemTouchHelperCallback != null) {
-                buildItemTouchHelper().attachToRecyclerView(mRecyclerView);
-            }
-        }
-
-        private void checkRecyclerView() {
-            if (mRecyclerView == null) {
-                throw new NullPointerException("Call \'withRecyclerView(recyclerView)\' first!");
-            }
+        public RvTools build() {
+            return new RvTools(itemTouchHelperCallback);
         }
     }
 
     private static class ItemTouchHelperCallbacks extends ItemTouchHelper.Callback {
 
-        private boolean mSwipeLeft;
-        private boolean mSwipeRight;
-        private boolean mMove;
+        private boolean swipeLeftGestureEnabled;
+        private boolean swipeRightGestureEnabled;
+        private boolean moveGestureEnabled;
 
-        private int mMoveFlags;
+        private int moveDirections;
 
-        private IOnSwipeLeftAction mSwipeLeftAction;
-        private IOnSwipeRightAction mSwipeRightAction;
-        private IOnMoveAction mMoveAction;
+        private OnSwipeLeftAction swipeLeftAction;
+        private OnSwipeRightAction swipeRightAction;
 
-        private IOnOrderChangedListener mOnOrderChangedListener;
-        private boolean mWasMoved;
+        private OnOrderChangedListener onOrderChangedListener;
+        private boolean wasMoved;
 
-        private SwipeContextMenuDrawer mIBackgroundDrawer;
+        private SwipeContextMenuDrawer swipeContextMenuDrawer;
+
+        private ItemTouchUIUtil itemTouchUIUtil;
 
         private ItemTouchHelperCallbacks() {
+            itemTouchUIUtil = getDefaultUIUtil();
         }
 
-        // Setters
-        private void setSwipeLeft(boolean swipeLeft) {
-            mSwipeLeft = swipeLeft;
+        /**
+         * Set directions the items could be moveList in.
+         */
+        private void setMoveDirections(@Direction int... moveDirections) {
+            for (int direction : moveDirections) {
+                this.moveDirections |= direction;
+            }
         }
 
-        private void setSwipeRight(boolean swipeRight) {
-            mSwipeRight = swipeRight;
+        void setMoveGestureEnabled() {
+            this.moveGestureEnabled = true;
         }
 
-        private void setMove(boolean move) {
-            mMove = move;
+        private void setSwipeLeftAction(OnSwipeLeftAction swipeLeftAction) {
+            this.swipeLeftGestureEnabled = true;
+            this.swipeLeftAction = swipeLeftAction;
         }
 
-        private void setMoveFlags(int moveFlags) {
-            mMoveFlags = moveFlags;
+        private void setSwipeRightAction(OnSwipeRightAction swipeRightAction) {
+            this.swipeRightGestureEnabled = true;
+            this.swipeRightAction = swipeRightAction;
         }
 
-        private void setSwipeLeftAction(IOnSwipeLeftAction swipeLeftAction) {
-            mSwipeLeftAction = swipeLeftAction;
+        private void setSwipeContextMenuDrawer(SwipeContextMenuDrawer IBackgroundDrawer) {
+            swipeContextMenuDrawer = IBackgroundDrawer;
         }
 
-        private void setSwipeRightAction(IOnSwipeRightAction swipeRightAction) {
-            mSwipeRightAction = swipeRightAction;
+        private void setOnOrderChangedListener(OnOrderChangedListener onOrderChangedListener) {
+            this.onOrderChangedListener = onOrderChangedListener;
         }
-
-        private void setMoveAction(IOnMoveAction moveAction) {
-            mMoveAction = moveAction;
-        }
-
-        private void setBackgroundDrawer(SwipeContextMenuDrawer IBackgroundDrawer) {
-            mIBackgroundDrawer = IBackgroundDrawer;
-        }
-
-        public void setOnOrderChangedListener(IOnOrderChangedListener onOrderChangedListener) {
-            mOnOrderChangedListener = onOrderChangedListener;
-        }
-        // Setters
 
         @Override
         public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
             int swipeFlags = 0;
-            if (mSwipeLeft) {
+            if (swipeLeftGestureEnabled) {
                 swipeFlags |= ItemTouchHelper.LEFT;
             }
-            if (mSwipeRight) {
+            if (swipeRightGestureEnabled) {
                 swipeFlags |= ItemTouchHelper.RIGHT;
             }
-            int dragFlags = mMove ? mMoveFlags : 0;
+            int dragFlags = moveGestureEnabled ? moveDirections : 0;
 
             return makeMovementFlags(dragFlags, swipeFlags);
         }
 
         @Override
         public boolean isLongPressDragEnabled() {
-            return mMove;
+            return moveGestureEnabled;
         }
 
         @Override
         public boolean isItemViewSwipeEnabled() {
-            return mSwipeLeft || mSwipeRight;
+            return swipeLeftGestureEnabled || swipeRightGestureEnabled;
         }
 
         @Override
         public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-            if (mMoveAction != null) {
-                mMoveAction.onMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+
+            RvtRecycleAdapter rvtRecyclerAdapter;
+            try {
+                rvtRecyclerAdapter = (RvtRecycleAdapter) recyclerView.getAdapter();
+            } catch (ClassCastException ex) {
+                throw new RuntimeException("" +
+                        "Only RvtRecyclerAdapter should be used with RvTools. " +
+                        "Make sure your recycler view use adapter that extends from RvtRecyclerAdapter.");
             }
+
+            rvtRecyclerAdapter.onMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
             return true;
         }
 
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
             if (direction == ItemTouchHelper.LEFT) {
-                if (mSwipeLeftAction != null) {
-                    mSwipeLeftAction.onSwipeLeft(viewHolder.getAdapterPosition());
-                }
+                if (swipeLeftAction == null) return;
+                swipeLeftAction.onSwipeLeft(viewHolder.getAdapterPosition());
             } else {
-                if (mSwipeRightAction != null) {
-                    mSwipeRightAction.onSwipeRight(viewHolder.getAdapterPosition());
-                }
+                if (swipeRightAction == null) return;
+                swipeRightAction.onSwipeRight(viewHolder.getAdapterPosition());
             }
         }
 
-        @SuppressWarnings("deprecation")
         @Override
         public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+
             // If we have no default background drawer -> try find one in view holder
             // Some lists have one background drawer for all item
             // Some have different drawer for each item
-            if (viewHolder instanceof ISwipeContextMenuProvider) {
-                mIBackgroundDrawer = ((ISwipeContextMenuProvider) viewHolder).getSwipeMenuDrawer();
+            if (viewHolder instanceof SwipeContextMenuProvider) {
+                swipeContextMenuDrawer = ((SwipeContextMenuProvider) viewHolder).getSwipeMenuDrawer();
             }
 
-            if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && mIBackgroundDrawer != null) {
+            if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && swipeContextMenuDrawer != null) {
                 if (dX < 0) {
-                    mIBackgroundDrawer.drawLeft(c, viewHolder.itemView);
+                    swipeContextMenuDrawer.drawRightSideMenu(c, viewHolder.itemView);
                 } else {
-                    mIBackgroundDrawer.drawRight(c, viewHolder.itemView);
+                    swipeContextMenuDrawer.drawLeftSideMenu(c, viewHolder.itemView);
                 }
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-            } else {
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }
+
+            itemTouchUIUtil.onDraw(c, recyclerView, viewHolder.itemView, dX, dY, actionState, isCurrentlyActive);
         }
 
         @Override
         public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
-            if (actionState != ItemTouchHelper.ACTION_STATE_IDLE && viewHolder instanceof IViewHolderSelector) {
-                IViewHolderSelector itemViewHolder = (IViewHolderSelector) viewHolder;
+            if (actionState != ItemTouchHelper.ACTION_STATE_IDLE && viewHolder instanceof ViewHolderSelector) {
+                ViewHolderSelector itemViewHolder = (ViewHolderSelector) viewHolder;
                 itemViewHolder.onSelected();
             }
             super.onSelectedChanged(viewHolder, actionState);
@@ -211,20 +219,21 @@ public class RvTools {
         public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
             super.clearView(recyclerView, viewHolder);
             final int adapterPosition = viewHolder.getAdapterPosition();
-            if (viewHolder instanceof IViewHolderSelector && adapterPosition >= 0) {
-                ((IViewHolderSelector) viewHolder).onReleased();
+
+            if (viewHolder instanceof ViewHolderSelector && adapterPosition >= 0) {
+                ((ViewHolderSelector) viewHolder).onReleased();
             }
 
-            if (mWasMoved && mOnOrderChangedListener != null) {
-                mWasMoved = false;
-                mOnOrderChangedListener.onOrderChanged();
+            if (wasMoved && onOrderChangedListener != null) {
+                wasMoved = false;
+                onOrderChangedListener.onOrderChanged();
             }
         }
 
         @Override
         public void onMoved(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, int fromPos, RecyclerView.ViewHolder target, int toPos, int x, int y) {
             super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y);
-            mWasMoved = true;
+            wasMoved = true;
         }
 
     }
