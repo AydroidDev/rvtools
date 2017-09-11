@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/olmur/rvtools'
     gitUrl = 'https://github.com/olmur/rvtools.git'
 
-    libraryVersion = '0.0.2'
+    libraryVersion = '0.0.3'
 
     developerId = 'olmur'
     developerName = 'Olexii Muraviov'
@@ -31,8 +31,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 2
-        versionName "0.0.2"
+        versionCode 3
+        versionName "0.0.3"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
