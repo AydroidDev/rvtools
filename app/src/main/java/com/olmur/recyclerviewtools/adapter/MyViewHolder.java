@@ -3,26 +3,38 @@ package com.olmur.recyclerviewtools.adapter;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
-import com.olmur.recyclerviewtools.entities.MyEntity;
 import com.olmur.recyclerviewtools.R;
-import com.olmur.rvtools.adapter.RvtRecycleAdapter;
+import com.olmur.recyclerviewtools.entities.MyEntity;
+import com.olmur.rvtools.adapter.RvtViewHolder;
 import com.olmur.rvtools.property.ViewHolderSelector;
 import com.olmur.rvtools.utils.RvtUtils;
 
-public class MyViewHolder extends RvtRecycleAdapter.RvtViewHolder<MyEntity> implements ViewHolderSelector {
+public class MyViewHolder extends RvtViewHolder<MyEntity> implements ViewHolderSelector {
+
+    public static final int ON_BUTTON_CLICKED = 0;
 
     private TextView titleTv;
+    private Button clickB;
 
     MyViewHolder(@NonNull View view) {
         super(view);
         titleTv = view.findViewById(R.id.title_tv);
+        clickB = view.findViewById(R.id.click_b);
     }
 
     @Override
     public void bindViewHolder(MyEntity element) {
         titleTv.setText(element.getTitle());
+
+        clickB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                delegateClick(ON_BUTTON_CLICKED);
+            }
+        });
     }
 
     // Define view behaviour on item select.

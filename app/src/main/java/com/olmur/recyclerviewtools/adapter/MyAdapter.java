@@ -4,8 +4,8 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.olmur.recyclerviewtools.entities.MyEntity;
 import com.olmur.recyclerviewtools.R;
+import com.olmur.recyclerviewtools.entities.MyEntity;
 import com.olmur.rvtools.adapter.RvtRecycleAdapter;
 import com.olmur.rvtools.utils.RvtUtils;
 
@@ -26,7 +26,7 @@ public class MyAdapter extends RvtRecycleAdapter<MyEntity, List<MyEntity>, MyVie
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MyViewHolder createViewHolder(int viewType, ViewGroup parent) {
         return new MyViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.view_main_entity, parent, false));
     }

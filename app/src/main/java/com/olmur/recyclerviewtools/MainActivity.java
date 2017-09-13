@@ -13,12 +13,14 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.olmur.recyclerviewtools.adapter.MyAdapter;
+import com.olmur.recyclerviewtools.adapter.MyViewHolder;
 import com.olmur.recyclerviewtools.entities.MyEntity;
 import com.olmur.rvtools.RvTools;
 import com.olmur.rvtools.components.RvtSwipeContextMenu;
 import com.olmur.rvtools.property.OnOrderChangedListener;
 import com.olmur.rvtools.property.OnSwipeLeftAction;
 import com.olmur.rvtools.property.OnSwipeRightAction;
+import com.olmur.rvtools.property.ViewHolderClickDelegate;
 import com.olmur.rvtools.recyclerview.RvtRecyclerView;
 
 import java.util.Arrays;
@@ -74,18 +76,27 @@ public class MainActivity extends AppCompatActivity implements OnSwipeLeftAction
                 .withSwipeRightAction(this)
                 .withSwipeLeftAction(this)
                 .withMoveAction(this, RvTools.UP, RvTools.DOWN)
-                .withSwipeContextMenuDrawer(
-                        new RvtSwipeContextMenu.Builder(this)
-                                .withIconsRes(R.drawable.ic_edit, R.drawable.ic_delete)
-                                .withIconsSizeDp(32)
-                                .withIconsMarginFromListEdgesDp(16)
-                                .withIconsColorInt(Color.WHITE)
-                                .withBackgroundsColorsInt(Color.MAGENTA, Color.RED)
-                                .build()
+                .withSwipeContextMenuDrawer(new RvtSwipeContextMenu.Builder(this)
+                        .withIconsRes(R.drawable.ic_edit, R.drawable.ic_delete)
+                        .withIconsSizeDp(32)
+                        .withIconsMarginFromListEdgesDp(16)
+                        .withIconsColorInt(Color.WHITE)
+                        .withBackgroundsColorsInt(Color.MAGENTA, Color.RED)
+                        .build()
                 )
+                .withViewHolderClickDelegate(new ViewHolderClickDelegate() {
+                    @Override
+                    public void delegateClick(int position, int event) {
+                        MyEntity entity = myAdapter.getItem(position);
+                        if (event == MyViewHolder.ON_BUTTON_CLICKED)
+                            // Do something with entity
+                            Snackbar.make(root, "Delegate click from View Holder on position: " + position, Snackbar.LENGTH_SHORT).show();
+                    }
+                })
                 .build();
 
         rvTools.bind(recyclerView);
+
         Snackbar.make(root, "RvTools binded", Snackbar.LENGTH_LONG).show();
     }
 
