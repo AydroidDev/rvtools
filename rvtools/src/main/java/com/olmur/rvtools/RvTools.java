@@ -13,6 +13,8 @@ import com.olmur.rvtools.property.OnOrderChangedListener;
 import com.olmur.rvtools.property.OnSwipeLeftAction;
 import com.olmur.rvtools.property.OnSwipeRightAction;
 import com.olmur.rvtools.property.SwipeContextMenuProvider;
+import com.olmur.rvtools.property.ViewHolderClickDelegate;
+import com.olmur.rvtools.property.ViewHolderLongClickDelegate;
 import com.olmur.rvtools.property.ViewHolderSelector;
 
 import java.lang.annotation.Retention;
@@ -32,23 +34,52 @@ public final class RvTools {
     public static final int DOWN = ItemTouchHelper.DOWN;
 
 
+    private RecyclerView recyclerView;
+
     private ItemTouchHelper itemTouchHelper;
 
-    private RvTools(@NonNull ItemTouchHelperCallbacks itemTouchHelperCallbacks) {
-        this.itemTouchHelper = new ItemTouchHelper(itemTouchHelperCallbacks);
+    private ViewHolderClickDelegate viewHolderClickDelegate;
+
+    private ViewHolderLongClickDelegate viewHolderLongClickDelegate;
+
+    private RvTools() {
     }
 
     public void bind(@NonNull RecyclerView recyclerView) {
+        this.recyclerView = recyclerView;
         itemTouchHelper.attachToRecyclerView(recyclerView);
+        RvtRecycleAdapter rvtRecycleAdapter = (RvtRecycleAdapter) recyclerView.getAdapter();
+        rvtRecycleAdapter.setViewHolderClickDelegate(viewHolderClickDelegate);
+        rvtRecycleAdapter.setViewHolderLongClickDelegate(viewHolderLongClickDelegate);
     }
 
     public void unbind() {
         itemTouchHelper.attachToRecyclerView(null);
+        RvtRecycleAdapter rvtRecycleAdapter = (RvtRecycleAdapter) this.recyclerView.getAdapter();
+        rvtRecycleAdapter.setViewHolderClickDelegate(null);
+        rvtRecycleAdapter.setViewHolderLongClickDelegate(null);
+        this.recyclerView = null;
+    }
+
+    private void createItemTouchHelper(@NonNull ItemTouchHelperCallbacks itemTouchHelperCallbacks) {
+        this.itemTouchHelper = new ItemTouchHelper(itemTouchHelperCallbacks);
+    }
+
+    private void setViewHolderClickDelegate(ViewHolderClickDelegate viewHolderClickDelegate) {
+        this.viewHolderClickDelegate = viewHolderClickDelegate;
+    }
+
+    private void setViewHolderLongClickDelegate(ViewHolderLongClickDelegate viewHolderLongClickDelegate) {
+        this.viewHolderLongClickDelegate = viewHolderLongClickDelegate;
     }
 
     public static class Builder {
 
         private ItemTouchHelperCallbacks itemTouchHelperCallback;
+
+        private ViewHolderClickDelegate viewHolderClickDelegate;
+
+        private ViewHolderLongClickDelegate viewHolderLongClickDelegate;
 
         public Builder() {
             itemTouchHelperCallback = new ItemTouchHelperCallbacks();
@@ -76,8 +107,26 @@ public final class RvTools {
             return this;
         }
 
+        public Builder withViewHolderClickDelegate(@NonNull ViewHolderClickDelegate clickDelegate) {
+            this.viewHolderClickDelegate = clickDelegate;
+            return this;
+        }
+
         public RvTools build() {
-            return new RvTools(itemTouchHelperCallback);
+
+            RvTools rvTools = new RvTools();
+
+            rvTools.createItemTouchHelper(itemTouchHelperCallback);
+
+            if (viewHolderClickDelegate != null) {
+                rvTools.setViewHolderClickDelegate(viewHolderClickDelegate);
+            }
+
+            if (viewHolderLongClickDelegate != null) {
+                rvTools.setViewHolderLongClickDelegate(viewHolderLongClickDelegate);
+            }
+
+            return rvTools;
         }
     }
 
