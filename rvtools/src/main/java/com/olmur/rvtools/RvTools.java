@@ -14,7 +14,6 @@ import com.olmur.rvtools.property.OnSwipeLeftAction;
 import com.olmur.rvtools.property.OnSwipeRightAction;
 import com.olmur.rvtools.property.SwipeContextMenuProvider;
 import com.olmur.rvtools.property.ViewHolderClickDelegate;
-import com.olmur.rvtools.property.ViewHolderLongClickDelegate;
 import com.olmur.rvtools.property.ViewHolderSelector;
 
 import java.lang.annotation.Retention;
@@ -40,8 +39,6 @@ public final class RvTools {
 
     private ViewHolderClickDelegate viewHolderClickDelegate;
 
-    private ViewHolderLongClickDelegate viewHolderLongClickDelegate;
-
     private RvTools() {
     }
 
@@ -50,14 +47,12 @@ public final class RvTools {
         itemTouchHelper.attachToRecyclerView(recyclerView);
         RvtRecycleAdapter rvtRecycleAdapter = (RvtRecycleAdapter) recyclerView.getAdapter();
         rvtRecycleAdapter.setViewHolderClickDelegate(viewHolderClickDelegate);
-        rvtRecycleAdapter.setViewHolderLongClickDelegate(viewHolderLongClickDelegate);
     }
 
     public void unbind() {
         itemTouchHelper.attachToRecyclerView(null);
         RvtRecycleAdapter rvtRecycleAdapter = (RvtRecycleAdapter) this.recyclerView.getAdapter();
         rvtRecycleAdapter.setViewHolderClickDelegate(null);
-        rvtRecycleAdapter.setViewHolderLongClickDelegate(null);
         this.recyclerView = null;
     }
 
@@ -69,17 +64,11 @@ public final class RvTools {
         this.viewHolderClickDelegate = viewHolderClickDelegate;
     }
 
-    private void setViewHolderLongClickDelegate(ViewHolderLongClickDelegate viewHolderLongClickDelegate) {
-        this.viewHolderLongClickDelegate = viewHolderLongClickDelegate;
-    }
-
     public static class Builder {
 
         private ItemTouchHelperCallbacks itemTouchHelperCallback;
 
         private ViewHolderClickDelegate viewHolderClickDelegate;
-
-        private ViewHolderLongClickDelegate viewHolderLongClickDelegate;
 
         public Builder() {
             itemTouchHelperCallback = new ItemTouchHelperCallbacks();
@@ -120,10 +109,6 @@ public final class RvTools {
 
             if (viewHolderClickDelegate != null) {
                 rvTools.setViewHolderClickDelegate(viewHolderClickDelegate);
-            }
-
-            if (viewHolderLongClickDelegate != null) {
-                rvTools.setViewHolderLongClickDelegate(viewHolderLongClickDelegate);
             }
 
             return rvTools;

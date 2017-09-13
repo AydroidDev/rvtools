@@ -4,12 +4,9 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.olmur.rvtools.property.ViewHolderClickDelegate;
-import com.olmur.rvtools.property.ViewHolderLongClickDelegate;
 import com.olmur.rvtools.property.ViewHolderSelector;
 import com.olmur.rvtools.utils.RvtConstants;
 import com.olmur.rvtools.utils.RvtUtils;
@@ -17,8 +14,7 @@ import com.olmur.rvtools.utils.RvtUtils;
 public abstract class RvtViewHolder<E> extends RecyclerView.ViewHolder
         implements ViewHolderSelector {
 
-    private ViewHolderClickDelegate rvClickDelegate;
-    private ViewHolderLongClickDelegate rvLongClickDelegate;
+    private RvtRecycleAdapter rvtRecycleAdapter;
 
     public RvtViewHolder(@NonNull View view) {
         super(view);
@@ -29,6 +25,9 @@ public abstract class RvtViewHolder<E> extends RecyclerView.ViewHolder
      */
     public abstract void bindViewHolder(E element);
 
+    /**
+     * Method is being called when user is dragging or moving current view holder
+     */
     @Override
     @CallSuper
     public void onSelected() {
@@ -37,6 +36,9 @@ public abstract class RvtViewHolder<E> extends RecyclerView.ViewHolder
         }
     }
 
+    /**
+     * Method is being called when user stopped interacting with current view holder
+     */
     @Override
     @CallSuper
     public void onReleased() {
@@ -58,27 +60,16 @@ public abstract class RvtViewHolder<E> extends RecyclerView.ViewHolder
         return RvtConstants.Default.STANDARD_ANIMATION_DURATION;
     }
 
+    /**
+     * Use this method to delegate click from inner view holder's views
+     */
     protected void delegateClick(int event) {
-        if (rvClickDelegate == null) {
-            throw new NullPointerException("ViewHolderClickDelegate is null. " +
-                    "Make sure you provided it in withViewHolderClickDelegate(delegate) method in RvTools.Builder class");
+        if (rvtRecycleAdapter != null && rvtRecycleAdapter.getViewHolderClickDelegate() != null) {
+            rvtRecycleAdapter.getViewHolderClickDelegate().delegateClick(getAdapterPosition(), event);
         }
-        rvClickDelegate.delegateClick(getAdapterPosition(), event);
     }
 
-    protected void delegateLongClick(int event) {
-        if (rvLongClickDelegate == null) {
-            throw new NullPointerException("ViewHolderLongClickDelegate is null. " +
-                    "Make sure you provided it in withViewHolderLongClickDelegate(delegate) method in RvTools.Builder class");
-        }
-        rvLongClickDelegate.delegateLongClick(getAdapterPosition(), event);
-    }
-
-    public void setRvClickDelegate(@Nullable ViewHolderClickDelegate rvClickDelegate) {
-        this.rvClickDelegate = rvClickDelegate;
-    }
-
-    public void setRvLongClickDelegate(@Nullable ViewHolderLongClickDelegate rvLongClickDelegate) {
-        this.rvLongClickDelegate = rvLongClickDelegate;
+    public void setRvtRecycleAdapter(RvtRecycleAdapter rvtRecycleAdapter) {
+        this.rvtRecycleAdapter = rvtRecycleAdapter;
     }
 }

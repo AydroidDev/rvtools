@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 
 import com.olmur.rvtools.property.OnMoveAction;
 import com.olmur.rvtools.property.ViewHolderClickDelegate;
-import com.olmur.rvtools.property.ViewHolderLongClickDelegate;
 
 import java.util.Collection;
 
@@ -14,8 +13,6 @@ public abstract class RvtRecycleAdapter<E, C extends Collection<E>, VH extends R
         implements OnMoveAction {
 
     private ViewHolderClickDelegate viewHolderClickDelegate;
-
-    private ViewHolderLongClickDelegate viewHolderLongClickDelegate;
 
     protected C adapterItems;
 
@@ -36,8 +33,7 @@ public abstract class RvtRecycleAdapter<E, C extends Collection<E>, VH extends R
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
         VH viewHolder = createViewHolder(viewType, parent);
-        viewHolder.setRvClickDelegate(viewHolderClickDelegate);
-        viewHolder.setRvLongClickDelegate(viewHolderLongClickDelegate);
+        viewHolder.setRvtRecycleAdapter(this);
         return viewHolder;
     }
 
@@ -63,7 +59,7 @@ public abstract class RvtRecycleAdapter<E, C extends Collection<E>, VH extends R
         this.viewHolderClickDelegate = viewHolderClickDelegate;
     }
 
-    public void setViewHolderLongClickDelegate(ViewHolderLongClickDelegate viewHolderLongClickDelegate) {
-        this.viewHolderLongClickDelegate = viewHolderLongClickDelegate;
+    public ViewHolderClickDelegate getViewHolderClickDelegate() {
+        return viewHolderClickDelegate;
     }
 }
