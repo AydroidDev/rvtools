@@ -2,8 +2,10 @@ package com.olmur.rvtools.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 
+import com.olmur.rvtools.property.OnItemClickListener;
 import com.olmur.rvtools.property.OnMoveAction;
 import com.olmur.rvtools.property.ViewHolderClickDelegate;
 
@@ -13,6 +15,8 @@ public abstract class RvtRecycleAdapter<E, C extends Collection<E>, VH extends R
         implements OnMoveAction {
 
     private ViewHolderClickDelegate viewHolderClickDelegate;
+
+    private OnItemClickListener itemClickListener;
 
     protected C adapterItems;
 
@@ -32,8 +36,18 @@ public abstract class RvtRecycleAdapter<E, C extends Collection<E>, VH extends R
 
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
-        VH viewHolder = createViewHolder(viewType, parent);
+        final VH viewHolder = createViewHolder(viewType, parent);
         viewHolder.setRvtRecycleAdapter(this);
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View unused) {
+                if (itemClickListener != null) {
+                    itemClickListener.onItemClick(viewHolder.getAdapterPosition());
+                }
+            }
+        });
+
         return viewHolder;
     }
 
@@ -61,5 +75,9 @@ public abstract class RvtRecycleAdapter<E, C extends Collection<E>, VH extends R
 
     public ViewHolderClickDelegate getViewHolderClickDelegate() {
         return viewHolderClickDelegate;
+    }
+
+    public void setItemClickListener(OnItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
     }
 }

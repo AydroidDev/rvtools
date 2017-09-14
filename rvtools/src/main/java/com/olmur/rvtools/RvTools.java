@@ -9,6 +9,7 @@ import android.support.v7.widget.helper.ItemTouchUIUtil;
 
 import com.olmur.rvtools.adapter.RvtRecycleAdapter;
 import com.olmur.rvtools.components.SwipeContextMenuDrawer;
+import com.olmur.rvtools.property.OnItemClickListener;
 import com.olmur.rvtools.property.OnOrderChangedListener;
 import com.olmur.rvtools.property.OnSwipeLeftAction;
 import com.olmur.rvtools.property.OnSwipeRightAction;
@@ -39,6 +40,8 @@ public final class RvTools {
 
     private ViewHolderClickDelegate viewHolderClickDelegate;
 
+    private OnItemClickListener onItemClickListener;
+
     private RvTools() {
     }
 
@@ -47,12 +50,14 @@ public final class RvTools {
         itemTouchHelper.attachToRecyclerView(recyclerView);
         RvtRecycleAdapter rvtRecycleAdapter = (RvtRecycleAdapter) recyclerView.getAdapter();
         rvtRecycleAdapter.setViewHolderClickDelegate(viewHolderClickDelegate);
+        rvtRecycleAdapter.setItemClickListener(onItemClickListener);
     }
 
     public void unbind() {
         itemTouchHelper.attachToRecyclerView(null);
         RvtRecycleAdapter rvtRecycleAdapter = (RvtRecycleAdapter) this.recyclerView.getAdapter();
         rvtRecycleAdapter.setViewHolderClickDelegate(null);
+        rvtRecycleAdapter.setItemClickListener(null);
         this.recyclerView = null;
     }
 
@@ -64,11 +69,17 @@ public final class RvTools {
         this.viewHolderClickDelegate = viewHolderClickDelegate;
     }
 
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
     public static class Builder {
 
         private ItemTouchHelperCallbacks itemTouchHelperCallback;
 
         private ViewHolderClickDelegate viewHolderClickDelegate;
+
+        private OnItemClickListener onItemClickListener;
 
         public Builder() {
             itemTouchHelperCallback = new ItemTouchHelperCallbacks();
@@ -101,15 +112,18 @@ public final class RvTools {
             return this;
         }
 
+        public Builder withOnItemClickListener(@NonNull OnItemClickListener itemClickListener) {
+            this.onItemClickListener = itemClickListener;
+            return this;
+        }
+
         public RvTools build() {
 
             RvTools rvTools = new RvTools();
 
             rvTools.createItemTouchHelper(itemTouchHelperCallback);
-
-            if (viewHolderClickDelegate != null) {
-                rvTools.setViewHolderClickDelegate(viewHolderClickDelegate);
-            }
+            rvTools.setViewHolderClickDelegate(viewHolderClickDelegate);
+            rvTools.setOnItemClickListener(onItemClickListener);
 
             return rvTools;
         }

@@ -17,6 +17,7 @@ import com.olmur.recyclerviewtools.adapter.MyViewHolder;
 import com.olmur.recyclerviewtools.entities.MyEntity;
 import com.olmur.rvtools.RvTools;
 import com.olmur.rvtools.components.RvtSwipeContextMenu;
+import com.olmur.rvtools.property.OnItemClickListener;
 import com.olmur.rvtools.property.OnOrderChangedListener;
 import com.olmur.rvtools.property.OnSwipeLeftAction;
 import com.olmur.rvtools.property.OnSwipeRightAction;
@@ -87,10 +88,16 @@ public class MainActivity extends AppCompatActivity implements OnSwipeLeftAction
                 .withViewHolderClickDelegate(new ViewHolderClickDelegate() {
                     @Override
                     public void delegateClick(int position, int event) {
-                        MyEntity entity = myAdapter.getItem(position);
                         if (event == MyViewHolder.ON_BUTTON_CLICKED)
                             // Do something with entity
                             Snackbar.make(root, "Delegate click from View Holder on position: " + position, Snackbar.LENGTH_SHORT).show();
+
+                    }
+                })
+                .withOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position) {
+                        Snackbar.make(root, "Item on position: " + position + " was clicked", Snackbar.LENGTH_SHORT).show();
                     }
                 })
                 .build();
