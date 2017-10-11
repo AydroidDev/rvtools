@@ -81,7 +81,7 @@ public abstract class RvtAdapter<E, C extends Collection<E>, VH extends RvtViewH
         viewHolderEventDelegates.clear();
     }
 
-    public void delegateEvent(int event, int position) {
+    void delegateEvent(int event, int position) {
         OnViewHolderEvent eventDelegate = viewHolderEventDelegates.get(event);
         if (eventDelegate == null) {
             new IllegalArgumentException("No delegate found for event: " + event).printStackTrace();
