@@ -1,6 +1,5 @@
 # RvTools
-<strong>Define swipe gestures, move list items and change their appearance.</strong> 
-
+ 
 ![alt tag](https://user-images.githubusercontent.com/16815979/31423289-936f3df8-ae5c-11e7-9cc8-56d1c930a05c.gif)
 
 
@@ -8,7 +7,7 @@
 ``` Gradle
 compile ('com.olmur.rvtools:rvtools:0.0.5') {
         exclude group: 'com.android.support'
-    }
+}
 ```
 
 Extend <b>RvtRecyclerAdapter</b> class
@@ -66,7 +65,7 @@ RvtSwipeContextMenu rvtSwipeContextMenu = new RvtSwipeContextMenu.Builder(contex
                         .withIconsMarginFromListEdgesDp(16)
                         .withIconsColorInt(Color.WHITE)
                         .withBackgroundsColorsInt(Color.MAGENTA, Color.RED)
-                        .build()
+                        .build();
 ```
 
 Or create your own swipe context menu by implementing <b>SwipeContextMenuDrawer</b> interface
@@ -124,4 +123,4 @@ Than you can bind and unbind rvtools from your recycler view
     rvtools.unbind();
  ```
 
-That's it :)
+Check out for more examples in sample app.
