@@ -6,13 +6,13 @@ import android.view.ViewGroup;
 
 import com.olmur.recyclerviewtools.R;
 import com.olmur.recyclerviewtools.entities.MyEntity;
-import com.olmur.rvtools.adapter.RvtRecycleAdapter;
+import com.olmur.rvtools.adapter.RvtAdapter;
 import com.olmur.rvtools.utils.RvtUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyAdapter extends RvtRecycleAdapter<MyEntity, List<MyEntity>, MyViewHolder> {
+public class MyAdapter extends RvtAdapter<MyEntity, List<MyEntity>, MyViewHolder> {
 
     @NonNull
     @Override

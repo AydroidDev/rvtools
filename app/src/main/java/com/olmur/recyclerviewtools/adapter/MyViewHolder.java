@@ -32,7 +32,7 @@ public class MyViewHolder extends RvtViewHolder<MyEntity> implements ViewHolderS
         clickB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                delegateClick(ON_BUTTON_CLICKED);
+                delegateEvent(ON_BUTTON_CLICKED);
             }
         });
     }

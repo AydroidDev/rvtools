@@ -6,15 +6,16 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.support.v7.widget.helper.ItemTouchUIUtil;
+import android.util.SparseArray;
 
-import com.olmur.rvtools.adapter.RvtRecycleAdapter;
+import com.olmur.rvtools.adapter.RvtAdapter;
 import com.olmur.rvtools.components.SwipeContextMenuDrawer;
 import com.olmur.rvtools.property.OnItemClickListener;
 import com.olmur.rvtools.property.OnOrderChangedListener;
 import com.olmur.rvtools.property.OnSwipeLeftAction;
 import com.olmur.rvtools.property.OnSwipeRightAction;
 import com.olmur.rvtools.property.SwipeContextMenuProvider;
-import com.olmur.rvtools.property.ViewHolderClickDelegate;
+import com.olmur.rvtools.property.OnViewHolderEvent;
 import com.olmur.rvtools.property.ViewHolderSelector;
 
 import java.lang.annotation.Retention;
@@ -38,7 +39,7 @@ public final class RvTools {
 
     private ItemTouchHelper itemTouchHelper;
 
-    private ViewHolderClickDelegate viewHolderClickDelegate;
+    private SparseArray<OnViewHolderEvent> viewHolderEventDelegates;
 
     private OnItemClickListener onItemClickListener;
 
@@ -48,15 +49,15 @@ public final class RvTools {
     public void bind(@NonNull RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
         itemTouchHelper.attachToRecyclerView(recyclerView);
-        RvtRecycleAdapter rvtRecycleAdapter = (RvtRecycleAdapter) recyclerView.getAdapter();
-        rvtRecycleAdapter.setViewHolderClickDelegate(viewHolderClickDelegate);
+        RvtAdapter rvtRecycleAdapter = (RvtAdapter) recyclerView.getAdapter();
+        rvtRecycleAdapter.registerEventDelegates(viewHolderEventDelegates);
         rvtRecycleAdapter.setItemClickListener(onItemClickListener);
     }
 
     public void unbind() {
         itemTouchHelper.attachToRecyclerView(null);
-        RvtRecycleAdapter rvtRecycleAdapter = (RvtRecycleAdapter) this.recyclerView.getAdapter();
-        rvtRecycleAdapter.setViewHolderClickDelegate(null);
+        RvtAdapter rvtRecycleAdapter = (RvtAdapter) this.recyclerView.getAdapter();
+        rvtRecycleAdapter.unregisterEventDelegates();
         rvtRecycleAdapter.setItemClickListener(null);
         this.recyclerView = null;
     }
@@ -65,8 +66,8 @@ public final class RvTools {
         this.itemTouchHelper = new ItemTouchHelper(itemTouchHelperCallbacks);
     }
 
-    private void setViewHolderClickDelegate(ViewHolderClickDelegate viewHolderClickDelegate) {
-        this.viewHolderClickDelegate = viewHolderClickDelegate;
+    private void setViewHolderEventDelegates(SparseArray<OnViewHolderEvent> eventDelegates) {
+        this.viewHolderEventDelegates = eventDelegates;
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -77,12 +78,13 @@ public final class RvTools {
 
         private ItemTouchHelperCallbacks itemTouchHelperCallback;
 
-        private ViewHolderClickDelegate viewHolderClickDelegate;
+        private SparseArray<OnViewHolderEvent> viewHolderClickDelegates;
 
         private OnItemClickListener onItemClickListener;
 
         public Builder() {
             itemTouchHelperCallback = new ItemTouchHelperCallbacks();
+            viewHolderClickDelegates = new SparseArray<>();
         }
 
         public Builder withSwipeLeftAction(@NonNull OnSwipeLeftAction action) {
@@ -107,8 +109,8 @@ public final class RvTools {
             return this;
         }
 
-        public Builder withViewHolderClickDelegate(@NonNull ViewHolderClickDelegate clickDelegate) {
-            this.viewHolderClickDelegate = clickDelegate;
+        public Builder withViewHolderEventDelegate(int event, @NonNull OnViewHolderEvent delegate) {
+            viewHolderClickDelegates.put(event, delegate);
             return this;
         }
 
@@ -122,7 +124,7 @@ public final class RvTools {
             RvTools rvTools = new RvTools();
 
             rvTools.createItemTouchHelper(itemTouchHelperCallback);
-            rvTools.setViewHolderClickDelegate(viewHolderClickDelegate);
+            rvTools.setViewHolderEventDelegates(viewHolderClickDelegates);
             rvTools.setOnItemClickListener(onItemClickListener);
 
             return rvTools;
@@ -209,9 +211,9 @@ public final class RvTools {
         @Override
         public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
 
-            RvtRecycleAdapter rvtRecyclerAdapter;
+            RvtAdapter rvtRecyclerAdapter;
             try {
-                rvtRecyclerAdapter = (RvtRecycleAdapter) recyclerView.getAdapter();
+                rvtRecyclerAdapter = (RvtAdapter) recyclerView.getAdapter();
             } catch (ClassCastException ex) {
                 throw new RuntimeException("" +
                         "Only RvtRecyclerAdapter should be used with RvTools. " +

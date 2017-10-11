@@ -21,7 +21,7 @@ import com.olmur.rvtools.property.OnItemClickListener;
 import com.olmur.rvtools.property.OnOrderChangedListener;
 import com.olmur.rvtools.property.OnSwipeLeftAction;
 import com.olmur.rvtools.property.OnSwipeRightAction;
-import com.olmur.rvtools.property.ViewHolderClickDelegate;
+import com.olmur.rvtools.property.OnViewHolderEvent;
 import com.olmur.rvtools.recyclerview.RvtRecyclerView;
 
 import java.util.Arrays;
@@ -85,13 +85,10 @@ public class MainActivity extends AppCompatActivity implements OnSwipeLeftAction
                         .withBackgroundsColorsInt(Color.MAGENTA, Color.RED)
                         .build()
                 )
-                .withViewHolderClickDelegate(new ViewHolderClickDelegate() {
+                .withViewHolderEventDelegate(MyViewHolder.ON_BUTTON_CLICKED, new OnViewHolderEvent() {
                     @Override
-                    public void delegateClick(int position, int event) {
-                        if (event == MyViewHolder.ON_BUTTON_CLICKED)
-                            // Do something with entity
-                            Snackbar.make(root, "Delegate click from View Holder on position: " + position, Snackbar.LENGTH_SHORT).show();
-
+                    public void onEvent(int position) {
+                        Snackbar.make(root, "On button clicked in view holder on position: " + position, Snackbar.LENGTH_SHORT).show();
                     }
                 })
                 .withOnItemClickListener(new OnItemClickListener() {

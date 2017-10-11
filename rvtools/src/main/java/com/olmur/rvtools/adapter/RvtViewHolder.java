@@ -14,7 +14,7 @@ import com.olmur.rvtools.utils.RvtUtils;
 public abstract class RvtViewHolder<E> extends RecyclerView.ViewHolder
         implements ViewHolderSelector {
 
-    private RvtRecycleAdapter rvtRecycleAdapter;
+    private RvtAdapter rvtRecycleAdapter;
 
     public RvtViewHolder(@NonNull View view) {
         super(view);
@@ -63,13 +63,13 @@ public abstract class RvtViewHolder<E> extends RecyclerView.ViewHolder
     /**
      * Use this method to delegate click from inner view holder's views
      */
-    protected void delegateClick(int event) {
-        if (rvtRecycleAdapter != null && rvtRecycleAdapter.getViewHolderClickDelegate() != null) {
-            rvtRecycleAdapter.getViewHolderClickDelegate().delegateClick(getAdapterPosition(), event);
+    protected void delegateEvent(int event) {
+        if (rvtRecycleAdapter != null) {
+            rvtRecycleAdapter.delegateEvent(event, getAdapterPosition());
         }
     }
 
-    public void setRvtRecycleAdapter(RvtRecycleAdapter rvtRecycleAdapter) {
+    public void setRvtRecycleAdapter(RvtAdapter rvtRecycleAdapter) {
         this.rvtRecycleAdapter = rvtRecycleAdapter;
     }
 }

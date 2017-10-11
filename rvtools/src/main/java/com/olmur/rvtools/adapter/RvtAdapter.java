@@ -2,26 +2,28 @@ package com.olmur.rvtools.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.olmur.rvtools.property.OnItemClickListener;
 import com.olmur.rvtools.property.OnMoveAction;
-import com.olmur.rvtools.property.ViewHolderClickDelegate;
+import com.olmur.rvtools.property.OnViewHolderEvent;
 
 import java.util.Collection;
 
-public abstract class RvtRecycleAdapter<E, C extends Collection<E>, VH extends RvtViewHolder<E>> extends RecyclerView.Adapter<VH>
+public abstract class RvtAdapter<E, C extends Collection<E>, VH extends RvtViewHolder<E>> extends RecyclerView.Adapter<VH>
         implements OnMoveAction {
 
-    private ViewHolderClickDelegate viewHolderClickDelegate;
+    private SparseArray<OnViewHolderEvent> viewHolderEventDelegates;
 
     private OnItemClickListener itemClickListener;
 
     protected C adapterItems;
 
-    public RvtRecycleAdapter() {
+    public RvtAdapter() {
         adapterItems = initItemsCollection();
+        viewHolderEventDelegates = new SparseArray<>();
     }
 
     @Override
@@ -69,12 +71,23 @@ public abstract class RvtRecycleAdapter<E, C extends Collection<E>, VH extends R
         // No operation by default
     }
 
-    public void setViewHolderClickDelegate(ViewHolderClickDelegate viewHolderClickDelegate) {
-        this.viewHolderClickDelegate = viewHolderClickDelegate;
+    public void registerEventDelegates(SparseArray<OnViewHolderEvent> eventDelegates) {
+        for (int i = 0; i < eventDelegates.size(); i++) {
+            viewHolderEventDelegates.put(eventDelegates.keyAt(i), eventDelegates.valueAt(i));
+        }
     }
 
-    public ViewHolderClickDelegate getViewHolderClickDelegate() {
-        return viewHolderClickDelegate;
+    public void unregisterEventDelegates() {
+        viewHolderEventDelegates.clear();
+    }
+
+    public void delegateEvent(int event, int position) {
+        OnViewHolderEvent eventDelegate = viewHolderEventDelegates.get(event);
+        if (eventDelegate == null) {
+            new IllegalArgumentException("No delegate found for event: " + event).printStackTrace();
+            return;
+        }
+        eventDelegate.onEvent(position);
     }
 
     public void setItemClickListener(OnItemClickListener itemClickListener) {
