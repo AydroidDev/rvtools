@@ -41,7 +41,7 @@ public class MyViewHolder extends RvtViewHolder<MyEntity> implements ViewHolderS
     @Override
     public void onSelected() {
         super.onSelected();
-        itemView.setBackgroundColor(Color.GRAY);
+        itemView.setBackgroundColor(Color.DKGRAY);
         titleTv.setTextColor(Color.WHITE);
     }
 
@@ -50,7 +50,7 @@ public class MyViewHolder extends RvtViewHolder<MyEntity> implements ViewHolderS
     public void onReleased() {
         super.onReleased();
         itemView.setBackgroundColor(Color.WHITE);
-        titleTv.setTextColor(Color.GRAY);
+        titleTv.setTextColor(Color.DKGRAY);
     }
 
     // Provide selected vh height for getting elevation increase/decrease when vh is being selected.
