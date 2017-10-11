@@ -1,17 +1,19 @@
 # RvTools
 <strong>Define swipe gestures, move list items and change their appearance.</strong> 
 
-![alt tag](https://github.com/olmur/rvtools/blob/master/snapshot.png)
+![alt tag](https://user-images.githubusercontent.com/16815979/31423289-936f3df8-ae5c-11e7-9cc8-56d1c930a05c.gif)
 
 
 <b>Add lib to your project</b>
 ``` Gradle
-compile 'com.olmur.rvtools:rvtools:0.0.3'
+compile ('com.olmur.rvtools:rvtools:0.0.5') {
+        exclude group: 'com.android.support'
+    }
 ```
 
 Extend <b>RvtRecyclerAdapter</b> class
 ``` Java
-public class MyAdapter extends RvtRecyclerAdapter<MyEntity, List<MyEntity>, MyViewHolder> {
+public class MyAdapter extends RvtListAdapter<MyEntity, MyViewHolder> {
   ...
 }
 ```
@@ -71,7 +73,7 @@ Or create your own swipe context menu by implementing <b>SwipeContextMenuDrawer<
 
 To add different behaviour on item select/release override these methods in your ViewHolder
 ``` Java
- public class MyViewHolder extends RvtRecyclerAdapter.RvtViewHolder<MyEntity> {
+ public class MyViewHolder extends RvtViewHolder<MyEntity> {
          ... 
         @Override
         public void onSelected() {
