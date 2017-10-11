@@ -56,7 +56,7 @@ public abstract class RvtAdapter<E, C extends Collection<E>, VH extends RvtViewH
     public abstract VH createViewHolder(int viewType, ViewGroup parent);
 
     /**
-     * Provide initial items collection for adapter. Could be empty.
+     * Provide initial items collection for adapter. Could be empty collection.
      */
     @NonNull
     public abstract C initItemsCollection();

@@ -6,23 +6,17 @@ import android.view.ViewGroup;
 
 import com.olmur.recyclerviewtools.R;
 import com.olmur.recyclerviewtools.entities.MyEntity;
-import com.olmur.rvtools.adapter.RvtAdapter;
-import com.olmur.rvtools.utils.RvtUtils;
+import com.olmur.rvtools.adapter.RvtListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyAdapter extends RvtAdapter<MyEntity, List<MyEntity>, MyViewHolder> {
+public class MyAdapter extends RvtListAdapter<MyEntity, MyViewHolder> {
 
     @NonNull
     @Override
     public List<MyEntity> initItemsCollection() {
         return new ArrayList<>();
-    }
-
-    @Override
-    public MyEntity getItem(int position) {
-        return adapterItems.get(position);
     }
 
     @Override
@@ -45,11 +39,5 @@ public class MyAdapter extends RvtAdapter<MyEntity, List<MyEntity>, MyViewHolder
     public void deleteItem(int position) {
         adapterItems.remove(position);
         notifyItemRemoved(position);
-    }
-
-    @Override
-    public void onMove(int fromPosition, int toPosition) {
-        RvtUtils.Gestures.move(adapterItems, fromPosition, toPosition);
-        notifyItemMoved(fromPosition, toPosition);
     }
 }
